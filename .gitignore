@@ -1,0 +1,15 @@
+# LaTeX auxiliary and log files
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+
+# Intermediate and output files
+*.dvi
+*.ps
+*.synctex.gz
+
+# Bibliography auxiliary files
+*.bbl
+*.blg
