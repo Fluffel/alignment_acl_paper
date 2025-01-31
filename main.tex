@@ -74,43 +74,6 @@
   Saarland University \\
   \texttt{koller@coli.uni-saarland.de} \\}
 
-% \author{
-%  \textbf{First Author\textsuperscript{1}},
-%  \textbf{Second Author\textsuperscript{1,2}},
-%  \textbf{Third T. Author\textsuperscript{1}},
-%  \textbf{Fourth Author\textsuperscript{1}},
-% \\
-%  \textbf{Fifth Author\textsuperscript{1,2}},
-%  \textbf{Sixth Author\textsuperscript{1}},
-%  \textbf{Seventh Author\textsuperscript{1}},
-%  \textbf{Eighth Author \textsuperscript{1,2,3,4}},
-% \\
-%  \textbf{Ninth Author\textsuperscript{1}},
-%  \textbf{Tenth Author\textsuperscript{1}},
-%  \textbf{Eleventh E. Author\textsuperscript{1,2,3,4,5}},
-%  \textbf{Twelfth Author\textsuperscript{1}},
-% \\
-%  \textbf{Thirteenth Author\textsuperscript{3}},
-%  \textbf{Fourteenth F. Author\textsuperscript{2,4}},
-%  \textbf{Fifteenth Author\textsuperscript{1}},
-%  \textbf{Sixteenth Author\textsuperscript{1}},
-% \\
-%  \textbf{Seventeenth S. Author\textsuperscript{4,5}},
-%  \textbf{Eighteenth Author\textsuperscript{3,4}},
-%  \textbf{Nineteenth N. Author\textsuperscript{2,5}},
-%  \textbf{Twentieth Author\textsuperscript{1}}
-% \\
-% \\
-%  \textsuperscript{1}Affiliation 1,
-%  \textsuperscript{2}Affiliation 2,
-%  \textsuperscript{3}Affiliation 3,
-%  \textsuperscript{4}Affiliation 4,
-%  \textsuperscript{5}Affiliation 5
-% \\
-%  \small{
-%    \textbf{Correspondence:} \href{mailto:email@domain}{email@domain}
-%  }
-% }
 
 \begin{document}
 \maketitle
@@ -125,19 +88,22 @@ The results indicate that LLMs are not only influenced by the linear order in wh
 
 \section{Introduction}
 
-Alignment in human language and communication is a widely studied process, in which people adapt to their communication partner by coordinating their behavior and language. These adaptation processes not only appear on a visual or auditory level, such as gestures, postures or the speech rate (\citealp{Holler2011mimicry}, \citealp{shockley2009coordinative}, \citealp{jungers2009speech}), but also on more underlying levels, e.g. the semantics or syntax (\citealp{BOCK1986355}, \citealp{garrod1987semanticcoord}).
+Alignment in human language and communication is a widely studied process, in which people adapt to their communication partner by coordinating their behavior and language. These adaptation processes not only appears on a surface level, such as gestures, postures or the speech rate (\citealp{Holler2011mimicry}, \citealp{shockley2009coordinative}, \citealp{jungers2009speech}), but also on more underlying levels, e.g. the semantics or syntax (\citealp{BOCK1986355}, \citealp{garrod1987semanticcoord}).
 Under these latter two aspects, artificial language generation has become almost indistinguishable from human language in recent years;
-Large Language Models (LLMs) are optimized to produce texts that seem as coherent as human language, yet their linguistic behavioral patterns haven't been studied much. Different from humans, LLMs work on a next-token-prediction task: They don't follow a conscious effort to convey meaning, but rather model a certain probability function to generate texts. Their concrete underlying workings are unknown, as they emerge from an optimization process on large amounts of data, making it unclear which patterns they have picked up on during that training.
+Large language models (LLMs) are trained to produce texts that seem as coherent as human language. The extend to which they resemble human behaviour, however, has only recently gained focus \cite{cai2024largelanguagemodelsresemble}. As LLMs become increasingly popular, it is pivotal to understand the extend of their human-like behaviour for better understanding of their societal impact and their potential psycholinguistic implications. 
+%  yet their linguistic behavioral patterns haven't been studied much. Different from humans, LLMs work on a next-token-prediction task: They don't follow a conscious effort to convey meaning, but rather model a certain probability function to generate texts. Their concrete underlying workings are unknown, as they emerge from an optimization process on large amounts of data, making it unclear which patterns they have picked up on during that training.
 
-Although they are never explicitly guided to exhibit behavior similar to humans, do Large Language Models nonetheless exhibit syntactic alignment in their text production, similar to us?
+Although LLMs are never explicitly guided to exhibit such behaviour, do large language models nonetheless exhibit syntactic alignment in their text production, similar to us?
 
 \subsection{Priming and Alignment}
-Research on human adaptation processes in language and communication has covered many different aspects. For this reason the terminology in this field is quite varied; Adaptation processes have been found in different modalities (e.g. gestures, lexical phrases...) over different temporal distances or under different sequential relations.
-Instead of referring to all these variations with different expressions, \citealp{Rasenberg2020framework} propose to simply distinguish them under the different aspects that they are analyzed on, avoiding confusion and redundancy in their terminology. The focus in this paper, for example, will be simply on syntactic adaptation (the sequential relation of words) over longer distances (longer time spans). Another differentation in their paper concerns the theoretical approaches used for explaining these effects. There are mainly to camps: One that explains alignment as a result of conscious, cooperative decisions made during communication \cite{brennan1996conceptual_pacts}, and one that views alignment as an automatic, mechanistic process occurring across various linguistic levels. This latter perspective has its theoretical foundation in \citealp{Pickering_Garrod_2004}'s Interactive Alignment Model (IAM). Under this view, 'alignment' is used to refer to a process in which situational cognitive models of speakers approach each other, such that they develop shared representations on different levels. The process is driven by automatic repetitions, 'priming', in which encountering an utterance will activate a representation that increases the likelihood that a person produces an utterance that uses the same representation.
+Research on human adaptation processes in language and communication has covered many different aspects. This paper puts its focus on syntactic adaptation. \citealp{reitter2008context} showed that such adaptation correlates with success in goal-oriented conversational tasks when this process appears over longer periods.
+On a theoretical side, the difference between long-term and short-term effects are explained by two opposing (although not exclusive) camps: One explains alignment as a result of conscious, cooperative decisions made during communication \cite{brennan1996conceptual_pacts}, the other by an automatic, mechanistic process occurring across various linguistic levels \cite{Rasenberg2020framework}. This latter perspective has its theoretical foundation in \citealp{Pickering_Garrod_2004}'s interactive alignment model (IAM). Under this view, alignment is used to refer to a process in which situational cognitive models of speakers approach each other, such that they develop shared representations on different levels. The process is driven by a priming mechanism, automatic repetitions that occur in a short term, in which encountering an utterance will activate a representation increasing the likelihood of reproducing an utterance that uses the same representation.
 
-This paper focuses on alignment in LLMs, although the term is used in a more general sense, not suggesting any implicit mechanistic explanations.\footnote{The mechanistic behind alignment in LLMs, if existant, would definitely be much different from that of humans.} Rather, it shall contrast adaptation that occurs in a more robust sense, in which language of different speakers generally becomes closer to one another over longer periods, from that of local short-term priming or repetitions.
-% This process would occur over longer periods and not only locally, extending mechanistic processes of priming.
-Nonetheless, the terms 'prime' and 'target' will be borrowed to refer to the first appearance of a linguistic structure and its subsequent repetition.
+As such theoretical views are not applicable to language models, the terms will be used in a more general sense.
+% In this paper, these terms are not meant to imply any theoretical mechanistic explanations, as this would be pointless when speaking about language models.
+Alignment will refer to more robust adaptation over a longer period, whereas priming will refer to short-term repetitions.
+% processes in which the language of different speakers generally become closer to one another (implying a longer time window). In contrast, 
+Based on psycholinguistic experiments, the terms \textit{prime} and \textit{target} are taken to refer to the first appearance of a linguistic structure and its subsequent repetition, detached from any theoretical implications.
 
 \section{Methodology}\label{sec:methodology}
 To capture adaptation processes that occur over the long term we analyse effects across whole conversations. Syntactic adaptation occurs when the likelihood of syntactic structures become more likely, given that they have been used before. \citealp{reitter2008context} introduced a method to measure such repeating effects for natural conversations, eliminating the need for controlled experimental setups.
