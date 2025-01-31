@@ -35,6 +35,7 @@
 %Including images in your LaTeX document requires adding
 %additional package(s)
 \usepackage{graphicx}
+\usepackage[inkscapelatex=false]{svg}
 
 \usepackage{qtree}
 % If the title and author information does not fit in the area allocated, uncomment the following
@@ -235,7 +236,7 @@ The lower effect of \textit{SameConversation}
 can be largely explained by this new strategy: By only sampling from the other speaker in \textsc{Prime}, chances of finding a prime are expected to be reduced by more than half. 
 Additionally, the Switchboard Corpus used here comprises normal conversations, while the Maptask Corpus used by \citealp{reitter2008context} includes task-oriented dialoges \cite{anderson1991}. Taken from \citeposs{reitter2008context} results, such goal driven conversations increase alignment effects.
 
-\section{Experiment 1: Long-Term Syntactic Alignment in LLMs}
+\section{Experiment 1: Long-Term Syntactic Alignment in LLMs}\label{sec:experiment1}
 To analyze syntactic alignment of Large Language Models, the same analysis was run on conversations generated using OpenAI's GPT-4o. Existing datasets proved to be unsuitable for two main reasons: Datasets containing conversations between LLMs contain interactions that are too short to analyze long-term effects. Datasets of human-LLM interactions are much too diverse and far from natural conversations to be included.
 
 \subsection{Dataset Generation}
@@ -290,6 +291,41 @@ LLMs must therefore adapt their syntax over the course of conversations aligning
 To further explore how LLMs align their syntax over the course of a conversation, we deploy a second experiment.
 
 \section{Experiment 2: Progression of Syntactic Alignment in LLMs}
+
+To explore the process of alignment throughout a conversation, we analyze the discrete distribution of used syntactic structures. We use the Jensen-Shannon Divergence (JSD) as distance measurement between a starting distribution and the evolving distributions over sections of the conversation.
+\subsection{Method}
+Conversations between two different agents are analyzed across different sections. For each section, the respective distribution of rules for both agents are extracted. Then, for each section, their Jensen-Shannon Divergence is calculated, resulting in a series of similarity measurements over the course of the conversation.\\
+To estimate accurate rule distributions across sections, there needs to be sufficient data available. We ran a pre-analysis of variance in JSD values with variable amounts of data to determine a suitable section size (see Appendix). Following these results, a single conversation between two different agents was run for 520 trials, each containing an identical prompting. Out of these 520 conversations, 14 were excluded due to repeating patterns. The remaining 506 conversations were used for the analysis.
+
+\subsection{Results}
+Figure \ref{fig:jsd} shows that the probability distributions of agents become progressively closer across splits.
+Most alignment happens primarily between the first and second splits.
+Additionally, the divergence score for the first split is already much lower than the expected 0.37 between Agents 7 and 8 \ref{appendix:jsdscores}. This suggests that agents align their language predominantly on just a few initial exchanges. Overall, these findings align with the results from section \ref{sec:experiment1}.
+
+
+\subsection{Discussion}
+The process of alignment in LLMs follows a continuous pattern - syntactic structures gradually converge towards the distribution given in their input context.
+The effects are largest at the beginning and fall off quickly. This behaviour is expected for continuous convergence of two approximating values: The further they are apart, the larger the change. It should be noted however, that the JSD naturally follows a non-linear decay \cite{lin1991divergence}. Further analysis is required to determine the exact decay rate for the alignment process.
+
+Nonetheless, we see clear evidence that LLMs not only adapt their syntax to the context that they are given, but also that this process correlates with the amount of syntactic structures that are available in their input.
+% Instructions tuned language models are therefore not only influenced by the semantics of their input vectors, but also by the order in which these token embeddings appear.
+
+\section{Conclusion}
+We have shown that LLMs adapt to the syntax of their input in a scenario of aritifical conversations. 
+% Comparing these results with findings from Appendix D1 highlights that these changes are driven solely by differences in the syntactic structures present in the context provided to the LLM.
+% In essence, LLMs naturally align their language to match the structures in their input.
+% Larger inputs result in stronger alignment effects. Their influence could be seen as competing with explicit prompts that also shape the syntax (Section 3.2).
+% This suggests a hypothesis: LLMs align their syntax relative to the relation between prompt instructions and the length of contextual syntactic structures. Exploration of this hypothesis is left for future work (Section 5.1).
+% When combined with the results of Section 3, particularly the discussion in Section 3.5, it becomes evident that the measured effects in LLMs resemble those seen in human conversations more by coincidence rather than because of a shared mechanism.
+Unlike humans, who exhibit variability far from stochastic behavior (Kilgarriff, 2005), the findings support that LLMs operate in a much more deterministic way. While short-term and long-term alignment effects in humans are thought to arise from distinct mechanisms (\citealp{Reitter2014}, see discussion in \citealp{Rasenberg2020framework}), the results underpin the intuition that short-term effects, like those reported in \citealp{cai2024largelanguagemodelsresemble}, are driven by the same principles as long-term alignment in LLMs; LLMs are not only influenced by the semantics of their input vectors, but also by the order in which these token embeddings appear.
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{figures/jsd_scores_splits}
+  \caption{Jensen-Shannon Divergence scores for each split of the conversation. Values are averaged over 100 bootstraps of 506 conversations. Errorbars show their standard deviation.}
+  \label{fig:jsd}
+\end{figure}
 % Bibliography entries for the entire Anthology, followed by custom entries
 %\bibliography{anthology,custom}
 % Custom bibliography entries only
