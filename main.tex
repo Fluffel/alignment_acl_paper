@@ -96,7 +96,7 @@ Large language models (LLMs) are trained to produce texts that seem as coherent 
 Although LLMs are never explicitly guided to exhibit such behaviour, do large language models nonetheless exhibit syntactic alignment in their text production, similar to us?
 
 \subsection{Priming and Alignment}
-Research on human adaptation processes in language and communication has covered many different aspects. This paper puts its focus on syntactic adaptation. \citealp{reitter2008context} showed that such adaptation correlates with success in goal-oriented conversational tasks when this process appears over longer periods.
+Research on human adaptation processes in language and communication has covered many different of its aspects. This paper puts its focus on syntactic adaptation. \citealp{reitter2008context} showed that such adaptation correlates with success in goal-oriented conversational tasks when this process appears over longer periods.
 On a theoretical side, the difference between long-term and short-term effects are explained by two opposing (although not exclusive) camps: One explains alignment as a result of conscious, cooperative decisions made during communication \cite{brennan1996conceptual_pacts}, the other by an automatic, mechanistic process occurring across various linguistic levels \cite{Rasenberg2020framework}. This latter perspective has its theoretical foundation in \citealp{Pickering_Garrod_2004}'s interactive alignment model (IAM). Under this view, alignment is used to refer to a process in which situational cognitive models of speakers approach each other, such that they develop shared representations on different levels. The process is driven by a priming mechanism, automatic repetitions that occur in a short term, in which encountering an utterance will activate a representation increasing the likelihood of reproducing an utterance that uses the same representation.
 
 As such theoretical views are not applicable to language models, the terms will be used in a more general sense.
@@ -106,10 +106,10 @@ Alignment will refer to more robust adaptation over a longer period, whereas pri
 Based on psycholinguistic experiments, the terms \textit{prime} and \textit{target} are taken to refer to the first appearance of a linguistic structure and its subsequent repetition, detached from any theoretical implications.
 
 \section{Methodology}\label{sec:methodology}
-To capture adaptation processes that occur over the long term we analyse effects across whole conversations. Syntactic adaptation occurs when the likelihood of syntactic structures become more likely, given that they have been used before. \citealp{reitter2008context} introduced a method to measure such repeating effects for natural conversations, eliminating the need for controlled experimental setups.
+% To capture adaptation processes that occur over the long term we analyse effects across whole conversations. Syntactic adaptation occurs when the likelihood of syntactic structures become more likely, given that they have been used before. \citealp{reitter2008context} introduced a method to measure such repeating effects for natural conversations, eliminating the need for controlled experimental setups.
 
 \subsection{Structural Annotations}
-In order to gain these syntactic structures, corpora must be structurally annotated. Annotations result in phrase structure trees (Figure \ref{fig:tree}), which can be interpreted in terms of their phrase structure rules, e.g. the subphrases that a phrase encompasses. Lexical and unary rules\footnote{phrases with a single child} are omitted, as they don't contribute to the syntactic structure of sentences. 
+To analyze syntactic structures, corpora must be annotated accordingly. Syntactic annotations result in phrase structure trees (Figure \ref{fig:tree}), which can be interpreted in terms of their phrase structure rules, e.g. the subphrases that a phrase encompasses. Lexical and unary rules (phrases with a single child) are omitted here, as they don't contribute to the syntactic structure of sentences. 
 \begin{figure}
   \begin{tabular}{p{0.25\textwidth}p{0.2\textwidth}}
     \resizebox{0.33\textwidth}{!}{
@@ -148,70 +148,81 @@ In order to gain these syntactic structures, corpora must be structurally annota
 \end{figure}
 
 \subsection{Analysing Syntactic Alignment}
+We analyse effects across whole conversations to capture adaptation processes that occur over the long term, following \citealp{reitter2008context}. His analysis introduced a method to measure alignment in corpora of natural conversations, eliminating the need for controlled experimental setups: Syntactic alignment takes place if occurences of syntactic structures become more likely, given that they have been used before inside a conversation. Conversely, there must be syntactic alignment if the presence of a syntactic structure is predictive for that structure to have occured beforehand. We use this paradigm, following \citeposs{reitter2008context} analysis:
+%  introduced a method to measure effects of increased repetition within conversations.
+% \citeposs{reitter2008context} analysis examines whether the occurence of a syntactic rule is predictive for that same structure to have occured beforehand. Such a correlation is only plausible when there is syntactic alignment present in the data.
 
-\citeposs{reitter2008context} analysis examines whether the occurence of a syntactic rule is predictive for that same structure to have occured beforehand. Such a correlation is only plausible when there is syntactic alignment present in the data.
+First, to establish which phrase structures are deemed primes and targets, conversations are split in half, removing a small portion in the middle to eliminate short-term priming effects. Phrase structure rules from the remaining halves form two sets of rules for each conversation. We will refer to the set of the first half as \textsc{Prime} and to the second as \textsc{Target}. For every rule in \textsc{Target}, we check whether that rule has been uttered by the other speaker in \textsc{Prime} and encode the presence in a binary variable \textit{Prime}.
+To establish whether such occurences are predictive for repetitions inside a conversation, we choose a control by sampling from another randomly chosen conversation, checking whether the rule is in its \textsc{Prime}. Datasamples capture this difference in another binary variable \textit{SameConversation}. This process leads to two samples for each rule in \textsc{Target} of every conversation. Fitting a mixed effects logistic regression, we check whether there is an effect of \textit{SameConversation} on \textit{Prime}. A positive effect is only expected if there is syntactic alignment.
 
-Conversations are split in half, removing a portion in the middle of around 20 words to eliminate short-term priming effects. From the remaining halves, the phrase structure rules are extracted, forming two sets of rules for each conversation. For simplicity, we call the first conversation half the \textsc{Prime} and the second half the \textsc{Target}, analogous to repetitions in priming. For every rule in the set of \textsc{Target} we check whether that rule has been uttered by the other speaker in \textsc{Prime}. The presence of a rule is encoded in a binary variable \textit{Prime}. We want to compare whether the likelihood of a prime between speakers is larger within conversations compared to the general likelihood. To control for this, we sample from every rule in \textsc{Target} twice: Once to check for a prime in the same conversation and once to check for a prime in a random other conversation. This difference will be encoded in another binary variable \textit{SameConversation}. Fitting a mixed effects logistic regression we check whether there is an effect of \textit{SameConversation} on \textit{Prime}. We would only expect a positive effect on \textit{Prime} if there was syntactic alignment.
+The analysis further includes the logarithmic frequency of rules across all conversations (\textit{ln(Frequency)}) and the logarithmic size of \textsc{Prime} (\textit{ln(Size)}), the number of words uttered by the speaker sampled from. Rules that appear only once are excluded. 
 
-The analysis further includes the logarithmic frequency of rules across all conversations (\textit{LogFrequency}) and the logarithmic size of \textsc{Prime} (\textit{LogSize}), where the size refers to the number of words uttered by the speaker sampled from. Rules that appear only once are excluded. A nested random intercept for the mixed effects logistic regression is included for speakers and conversations, as well as a random slope for \textit{LogFrequency}.
+The analysis improves on \citeposs{reitter2008context} approach in two crucial aspects: First, the sampling process limits itself on the other speaker of every conversation, eliminating effects that solely stem from speaker idiosyncrasies. Second, the analysis directly includes the size of \textsc{Prime} that was sampled from, which has definite impact on the likelihood of a rule to be present.
 
-\section{Verifying the Analysis on Human Conversations}
-To verify the analysis, we first apply it to a dataset of human-human conversations, namely the Switchboard Corpus \cite{marcus1994penn}. The corpus consists of a number of telephone conversations, out of which 650 annotated conversations were used. The analysis follows the method described in section \ref{sec:methodology}.
+% A nested random intercept for the mixed effects logistic regression is included for speakers and conversations, as well as a random slope for \textit{LogFrequency}.
 
-The mixed effects logistic regression was applied using the generalized linear mixed models (GLMM) of python's pymer4 package. Outliers, rules with a frequency $> 12000$, were excluded. Results are shown in Table \ref{tab:human}.
+\section{Verifying on Human Conversations}
+To verify the adapted analysis and to reproduce \citeposs{reitter2008context} findings, we first apply it to a dataset of human-human conversations. We use the Switchboard Corpus \cite{marcus1994penn} which consists of 650 annotated telephone conversations. The analysis follows the method described in section \ref{sec:methodology}.
 
+The mixed effects logistic regression was applied using the generalized linear mixed models (GLMM) of python's pymer4 package, including a random intercept for speakers and a random slope for \textit{ln(Frequency)}. Outliers, rules with a frequency $> 12000$, were excluded. Results are shown in Table \ref{tab:human}.
 
 \begin{table*}
   \centering
-  \begin{tabular}{lrrrrr}
-    \hline
-    &$\beta$&SE&OR& $z$& $P>|z|$\\
-    \hline
-    Intercept&
-    -2.927& 0.018& 0.054&  -158.847& 0.000\\
-    
-    ln(Frequency)&
-    1.174& 0.008& 3.184& 143.182& 0.000\\
-    
-    SameConversation&
-    0.228& 0.023& 1.201& 9.950& 0.000\\
-    
-    ln(Size)&
-    1.402& 0.033& 3.804& 41.921& 0.000\\
-    ln(Frequency):SameConversation&
-    -0.101& 0.010& 0.885& -9.757& 0.000\\
-    ln(Frequency):ln(Size)&
-    0.068& 0.015& 1.041& 4.699& 0.004\\
-    \hline
-    
-  \end{tabular}
+  % \resizebox{0.48\textwidth}{!}{
+    \begin{tabular}{lrrrrr}
+      \hline
+      &$\beta$&SE&OR& $z$& $P>|z|$\\
+      \hline
+      Intercept&
+      -2.927& 0.018& 0.054&  -158.847& 0.000\\
+      
+      ln(Frequency)&
+      1.174& 0.008& 3.184& 143.182& 0.000\\
+      
+      SameConversation&
+      0.228& 0.023& 1.201& 9.950& 0.000\\
+      
+      ln(Size)&
+      1.402& 0.033& 3.804& 41.921& 0.000\\
+      ln(Frequency):SameConversation&
+      -0.101& 0.010& 0.885& -9.757& 0.000\\
+      ln(Frequency):ln(Size)&
+      0.068& 0.015& 1.041& 4.699& 0.004\\
+      \hline
+      
+    \end{tabular}
+  % }
   \caption{\label{tab:human}
-  Results of the GLMM on the samples drawn from the Switchboard Corpus. Fixed effects, except \textit{SameConversation}, are centered. The model with the lowest $AIC$ was taken ($\Delta AIC>6$ compared to the second-best model).}
-  
+  The regression model for the Switchboard Corpus. Fixed effects, except \textit{SameConversation}, are centered. The model with the lowest $AIC$ was taken ($\Delta AIC>6$ compared to the second-best model).}
+    
 \end{table*}
+
 \subsection{Results: Switchboard}
-As would be expected, \textit{ln(Frequency)} ($\beta=1.174, p<0.001$) and \textit{ln(Size)} ($\beta=1.402, p<0.001$) largely increase the odds of a prime to be present in \textsc{Prime}.\
-\textit{SameConversation} ($beta=0.228, p<0.001$) has a positive effect on \textit{Prime}, supporting the findings of \citealp{reitter2008context}, although the reported values here are slightly lower ($\beta_{Reitter}=1.064$, $OR_{Reitter} = 2.90$). \
+As is expected, \textit{ln(Frequency)} ($\beta=1.174, p<0.001$) and \textit{ln(Size)} ($\beta=1.402, p<0.001$) largely increase the odds of \textit{Prime}.\
+\textit{SameConversation} ($beta=0.228, p<0.001$) has a significant positive effect, supporting the findings of \citealp{reitter2008context}, although with slightly lower values ($\beta_{Reitter}=1.064$, $OR_{Reitter} = 2.90$). \
 The interaction between \textit{ln(Frequency)} and \textit{SameConversation} ($\beta=-0.101, p<0.001$) indicates that alignment is stronger for less frequent syntactic structures.\
-The low interaction of \textit{ln(Frequency)} and \textit{ln(Size)} ($\beta=0.068, p<0.004$) indicates that it is neglegible.
+The interaction of \textit{ln(Frequency)} and \textit{ln(Size)} ($\beta=0.068, p<0.004$) is neglegible.
 
 \subsection{Preliminary Discussion}
-The results on the Switchboard Corpus show that the analysis captures alignment effects, verifying the results found in \citealp{reitter2008context} on a different dataset and with a refined sampling method.
-The lower effect of \textit{SameConversation}
-% as compared to \citeposs{reitter2008context}
-can be largely explained by this new strategy: By only sampling from the other speaker in \textsc{Prime}, chances of finding a prime are expected to be reduced by more than half. 
-Additionally, the Switchboard Corpus used here comprises normal conversations, while the Maptask Corpus used by \citealp{reitter2008context} includes task-oriented dialoges \cite{anderson1991}. Taken from \citeposs{reitter2008context} results, such goal driven conversations increase alignment effects.
+The analysis captures alignment effects in human conversations, verifying the results found in \citealp{reitter2008context} on a different dataset and with a refined sampling method.
+The lower effect of \textit{SameConversation} can be largely explained by this adaptation: Only sampling from the other speaker reduces the chances of finding a prime by more than half. 
+% Additionally, the Switchboard Corpus used here comprises normal conversations, while the Maptask Corpus used by \citealp{reitter2008context} includes task-oriented dialoges \cite{anderson1991}. Taken from \citeposs{reitter2008context} results, such goal driven conversations increase alignment effects, removing them hence decrease the effect.
+
+Adding on previous findings, the results underpin that alignment happens in-between speakers of conversations that are not goal-oriented. There are limitations, specifically concerning different topicality across conversations, which could be hypothesized to impact a speaker's used syntax. A discussion of this can be found in \ref{appendix:dicussion_on_topicality}, as the focus here is on LLM-generated conversations, where topicality can be mostly controlled.
 
 \section{Experiment 1: Long-Term Syntactic Alignment in LLMs}\label{sec:experiment1}
-To analyze syntactic alignment of Large Language Models, the same analysis was run on conversations generated using OpenAI's GPT-4o. Existing datasets proved to be unsuitable for two main reasons: Datasets containing conversations between LLMs contain interactions that are too short to analyze long-term effects. Datasets of human-LLM interactions are much too diverse and far from natural conversations to be included.
+% To analyze syntactic alignment of Large Language Models, the same analysis was run on conversations generated using OpenAI's GPT-4o. Existing datasets proved to be unsuitable for two main reasons: Datasets containing conversations between LLMs contain interactions that are too short to analyze long-term effects. Datasets of human-LLM interactions are much too diverse and far from natural conversations to be included.
 
 \subsection{Dataset Generation}
-For this process, we constructed a set of 'Agents'. Agents share a system prompt that instructs them on being in a conversation. Further, each agent is given a unique language prompt, varying their individual syntax, such that alignment effects can take place. Their responses are iteratively used to prompt the other agent, gradually building the context of a conversation. The process is run until a certain length threshold, a predefined number of words is surpassed.
+Identical to the analysis on humans, the same analysis was run on conversations generated using OpenAI's GPT-4o. Existing datasets proved to be unsuitable for two main reasons: Datasets containing conversations between LLMs contain interactions that are too short to analyze long-term effects. Datasets of human-LLM interactions are much too diverse and far from natural conversations to be suitable.
 
-Overall 17 different language instructions were used, resulting in 17 different agents. Those agents were cross-matched to create a total of 136 conversations with unique pairings, out of which 12 were excluded as they ended in repeating patterns. Conversations were generated using OpenAI's GPT-4o model. All conversations were prompted to have the same topic: "What makes a day a good day?". The remaing 124 conversations were used for the analysis.
+Conversations were generated by pairing different agents. Agents share a system prompt that instructs them on the conversational task. Each agent is further given a unique language specification to vary their individual syntax \textcolor{red}{Reference Prompt templates. Reference the differences in their syntax (jsd matrix)}. Their responses are iteratively used to prompt the other agent, gradually building the context of a conversation. The process is run until a certain number of words is reached.
+
+Overall 17 agents were created using ChatGPT. Those agents were cross-matched to create a total of 136 conversations with unique pairings, out of which 12 were excluded as they ended in repeating patterns.
+All conversations have the same topic: "What makes a day a good day?". The remaing 124 conversations were used for the analysis.
 
 \subsection{Method}
-The same analysis was run again on the generated dataset. The sampling process was adapted to exclude sampling from identical agents of other conversations. Outliers, rules with a frequency $>2000$, were excluded. The results are shown in Table \ref{tab:llm}.
+The analysis is described in section \ref{sec:methodology}. The sampling process was adapted to exclude sampling from identical agents of other conversations. Outliers, rules with a frequency $>2000$, were excluded. The results are shown in Table \ref{tab:llm}.
 
 \begin{table*}
   \centering
@@ -238,27 +249,30 @@ The same analysis was run again on the generated dataset. The sampling process w
     
   \end{tabular}
   \caption{\label{tab:llm}
-  Results of the GLMM on the samples drawn from the 124 GPT-40 conversations. Fixed effects, except \textit{SameConversation}, are centered. The model with the lowest $AIC$ was taken ($\Delta AIC>4$ compared to the second-best model).}
+  The regression model for the GPT-4o-generated conversations. Fixed effects, except \textit{SameConversation}, are centered. The model with the lowest $AIC$ was taken ($\Delta AIC>4$ compared to the second-best model).}
   
 
 \end{table*}
 
 \subsection{Results}
-We find a significant effect of \textit{SameConversation} on \textit{Prime} ($\beta = 0.198$, $p < 0.001$). LLMs do in fact align their syntax. Again, \textit{ln(Frequency)} and \textit{ln(Size)} show strong positive effects, as is expected. Similar to human conversations, \textit{ln(Frequency):SameConversation} has a negative effect on \textit{Prime}, showing that alignment is stronger on less frequent rules. Deviating from it is the interaction between \textit{ln(Frequency)} and \textit{ln(Size)} ($\beta=0.266, p<0.001$).
+
+\textit{SameConversation} has a significant positive effect on \textit{Prime} ($\beta=0.198,\, p<0.001$), increasing the odds by around $1.2$. As is expected, \textit{ln(Frequency)} and \textit{ln(Size)} also show strong positive effects.
+Similar to human conversations, \textit{ln(Frequency):SameConversation} has a negative effect on \textit{Prime}, indicating that alignment is stronger on less frequent rules. The interaction between \textit{ln(Frequency)} and \textit{ln(Size)} deviates from the results found for human conversations with a significant positive effect ($\beta=0.266,\, p<0.001$).
 
 \subsection{Discussion}
 
 
-The difference in the effect of \textit{ln(Frequency):ln(Size)} has an interesting implaction: Assuming there is alignment, whenever a rule occurs, it raises the likelihood of that rule to appear again. This means that increasing the sample set size not only boosts the occurrence of a rule, but also increases the probability of further occurences. This logic only applies in a setting in which occurences are actually driven by random processes, hence the results indicate the stochastic nature of LLMs, which is absent in human communication.
-The results show that LLMs exhibit syntactic alignment over long periods.
-% The effect of \textit{SameConversation} is significant, although slightly lower than for human conversations.
-LLMs must therefore adapt their syntax over the course of conversations aligning to the other agent or to the syntax present in their given contexts. The analysis is not designed to give any more insights of this process, beyond this simple statement. It is safe to say that the mechanism in LLMs differs from that of human, making the results highlight a shared feature between the language produced by LLMs and humans, rather than any shared mechanisms.
+% The difference in the effect of \textit{ln(Frequency):ln(Size)} has an interesting implaction: Assuming there is alignment, whenever a rule occurs, it raises the likelihood of that rule to appear again. This means that increasing the sample set size not only boosts the occurrence of a rule, but also increases the probability of further occurences. This logic only applies in a setting in which occurences are actually driven by random processes, hence the results indicate the stochastic nature of LLMs, which is absent in human communication.
+The results show that LLMs exhibit syntactic alignment over long periods, indicating that they adapt to the syntax present in their input.
+Clearly, the mechanism in LLMs for text production is different from humans, making the results highlight a shared feature, which appears rather coincidental than by any shared mechanism.
 
-To further explore how LLMs align their syntax over the course of a conversation, we deploy a second experiment.
+The data was generated on the instruction of having a conversation, which potentially induces this behaviour, as conversational data of humans follows this pattern. Further analysis is needed to explore, whether this behaviour reflects a bias in their training data, which is left for future directions.
+
+The focus of the second experiment will be on how LLMs adapt their syntax over the course of a conversation.
 
 \section{Experiment 2: Progression of Syntactic Alignment in LLMs}
 
-To explore the process of alignment throughout a conversation, we analyze the discrete distribution of used syntactic structures. We use the Jensen-Shannon Divergence (JSD) as distance measurement between a starting distribution and the evolving distributions over sections of the conversation.
+To explore the process of alignment throughout a conversation, we analyze the discrete distributions of used syntactic structures. We use the Jensen-Shannon Divergence (JSD) as distance measurement between two different agents, modelling how the syntactic similarity of their languages evolves.
 \subsection{Method}
 Conversations between two different agents are analyzed across different sections. For each section, the respective distribution of rules for both agents are extracted. Then, for each section, their Jensen-Shannon Divergence is calculated, resulting in a series of similarity measurements over the course of the conversation.\\
 To estimate accurate rule distributions across sections, there needs to be sufficient data available. We ran a pre-analysis of variance in JSD values with variable amounts of data to determine a suitable section size (see Appendix). Following these results, a single conversation between two different agents was run for 520 trials, each containing an identical prompting. Out of these 520 conversations, 14 were excluded due to repeating patterns. The remaining 506 conversations were used for the analysis.
